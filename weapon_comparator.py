@@ -12,8 +12,11 @@ class Weapon:
     def __init__(self, name, weaponDiceMultiplier,
                  damageDice, critProfile, onHit):
 
-        self.__dict__ = locals()
-        del self.__dict__['self']
+        self.name = name
+        self.weaponDiceMultiplier = float(weaponDiceMultiplier)
+        self.damageDice = DamageDice(damageDice)
+        self.critProfile = CritProfile(critProfile)
+        self.onHit = DamageDice(onHit)
 
     def averageDamage(self, deadly):
         return ((self.weaponDiceMultiplier * self.damageDice.averageDamage() + deadly) * (self.critProfile.effectiveHits() / 19) + getattr(self.onHit, 'averageDamage', lambda: self.onHit)())
@@ -119,7 +122,7 @@ if __name__ == '__main__':
     print(f"Saved graph to {os.path.dirname(os.path.abspath(__file__))}" +
           f"/{saveName}.png")
 else:
-    sos = Weapon('Sword of Shadow', 1, DamageDice('2d6'),
-                 CritProfile('15-20x5'), 0)
-    br = Weapon('Echo of Blackrazor', 1, DamageDice('2d6'),
-                CritProfile('17-20x4'), DamageDice('3d6'))
+    sos = Weapon('Sword of Shadow', 1, '2d6',
+                 '15-20x5', '0d0')
+    br = Weapon('Echo of Blackrazor', 1, '2d6',
+                '17-20x4', '3d6')
