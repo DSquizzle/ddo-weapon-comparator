@@ -13,16 +13,16 @@ class float(float):
 
 class Weapon:
     def __init__(self, name, weaponDiceMultiplier,
-                 damageDice, critProfile, onHit):
+                 baseDamageDice, critProfile, onHit):
 
         self.name = name
         self.weaponDiceMultiplier = float(weaponDiceMultiplier)
-        self.damageDice = DamageDice(damageDice)
+        self.baseDamageDice = DamageExpression(baseDamageDice)
         self.critProfile = CritProfile(critProfile)
-        self.onHit = DamageDice(onHit)
+        self.onHit = DamageExpression(onHit)
 
     def averageDamage(self, deadly):
-        return ((self.weaponDiceMultiplier * self.damageDice.averageDamage() + deadly) * (self.critProfile.effectiveHits() / 19) + getattr(self.onHit, 'averageDamage', lambda: self.onHit)())
+        return ((self.weaponDiceMultiplier * self.baseDamageDice.averageDamage() + deadly) * (self.critProfile.effectiveHits() / 19) + self.onHit.averageDamage())
 
 
 class DamageExpression:
