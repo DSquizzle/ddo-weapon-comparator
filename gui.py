@@ -43,9 +43,9 @@ class MainWindow(QMainWindow):
 
         self.fields = [["Weapon Name", "e.g. Insanity", ".*"],
                        ["Weapon Dice Multiplier", "e.g. 1", "\\d*(\\.\\d+)?"],
-                       ["Base Damage Dice", "e.g. 2d6", "\\d*d\\d+"],
+                       ["Base Damage Dice", "e.g. 2d6", "(?:(?:(?:\\d*d\\d+)|(?:\\d+(\\.\\d+)?|\\.\\d+))\\s*\\+\\s*)*(?:(?:\\d*d\\d+)|(?:\\d+(\\.\\d+)?|\\.\\d+))"],
                        ["Critical Profile", "e.g. 19-20x2", "[12]?\\d-20x\\d+"],
-                       ["On-Hit Damage", "e.g. 3d6", "\\d*d\\d+"]]
+                       ["On-Hit Damage", "e.g. 3d6", "(?:(?:(?:\\d*d\\d+)|(?:\\d+(\\.\\d+)?|\\.\\d+))\\s*\\+\\s*)*(?:(?:\\d*d\\d+)|(?:\\d+(\\.\\d+)?|\\.\\d+))"]]
 
         grid = QGridLayout()
         for row, field in enumerate(self.fields):

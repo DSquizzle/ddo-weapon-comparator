@@ -7,19 +7,36 @@ matplotlib.use('Qt5Agg')
 TEXT_GREEN = '\033[32m'
 ENDC = '\033[m'
 
+class float(float):
+    def averageDamage(self):
+        return self
 
 class Weapon:
     def __init__(self, name, weaponDiceMultiplier,
-                 damageDice, critProfile, onHit):
+                 baseDamageDice, critProfile, onHit):
 
         self.name = name
         self.weaponDiceMultiplier = float(weaponDiceMultiplier)
-        self.damageDice = DamageDice(damageDice)
+        self.baseDamageDice = DamageExpression(baseDamageDice)
         self.critProfile = CritProfile(critProfile)
-        self.onHit = DamageDice(onHit)
+        self.onHit = DamageExpression(onHit)
 
     def averageDamage(self, deadly):
-        return ((self.weaponDiceMultiplier * self.damageDice.averageDamage() + deadly) * (self.critProfile.effectiveHits() / 19) + getattr(self.onHit, 'averageDamage', lambda: self.onHit)())
+        return ((self.weaponDiceMultiplier * self.baseDamageDice.averageDamage() + deadly) * (self.critProfile.effectiveHits() / 19) + self.onHit.averageDamage())
+
+
+class DamageExpression:
+    def __init__(self, string):
+        self.summands = []
+        summands = string.split('+')
+        for summand in summands:
+            self.summands.append(DamageDice(summand) if 'd' in summand else float(summand))
+
+    def __str__(self):
+        return ' + '.join([str(summand) for summand in self.summands])
+
+    def averageDamage(self):
+        return sum(summand.averageDamage() for summand in self.summands)
 
 
 class DamageDice:
