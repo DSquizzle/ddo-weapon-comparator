@@ -10,6 +10,9 @@ from matplotlib.figure import Figure
 from weapon_comparator import Weapon
 
 class MplCanvas(FigureCanvasQTAgg):
+    """
+    A class that will be used to create the widget that contains the graphs
+    """
 
     def __init__(self):
         fig = Figure()
@@ -19,11 +22,17 @@ class MplCanvas(FigureCanvasQTAgg):
 class MainWindow(QMainWindow):
 
     def __init__(self, *args, **kwargs):
+        """
+        Create widgets, define layouts, and connect signals to slots
+        """
         super().__init__(*args, **kwargs)
         self.setWindowTitle("DDO Weapon Comparator")
 
+        # Create a list to hold user input fields
         self.weaponInfoFields = []
+        # Create a dict to hold inputted weapons
         self.weapons = {}
+        # Create a dict to hold weapon plots
         self.plottedWeapons = {}
 
         self.weaponSelector = QComboBox()
@@ -47,6 +56,8 @@ class MainWindow(QMainWindow):
                        ["Critical Profile", "e.g. 19-20x2", "[12]?\\d-20x\\d+"],
                        ["On-Hit Damage", "e.g. 3d6", "(?:(?:(?:\\d*d\\d+)|(?:\\d+(\\.\\d+)?|\\.\\d+))\\s*\\+\\s*)*(?:(?:\\d*d\\d+)|(?:\\d+(\\.\\d+)?|\\.\\d+))"]]
 
+        # Add a label, input field, and input validator for each item in each
+        # list in self.fields
         grid = QGridLayout()
         for row, field in enumerate(self.fields):
             widget = QLineEdit(placeholderText=field[1])
@@ -87,20 +98,31 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
 
     def onInputFieldChanged(self):
-        #self.saveButton.setEnabled(self.inputsAreAcceptable())
+        """
+        When user inputs change, set the "Add Plot" and "Remove Plot" buttons
+        to be enabled or disabled, as appropriate, and update the plot if the
+        plot for the current weapon is toggled on
+        """
         self.addPlotButton.setEnabled(self.plotIsAddable())
         self.removePlotButton.setEnabled(self.plotIsRemovable())
 
         if self.inputsAreAcceptable():
+            # Auto-save the weapon any time all inputs pass the regex
             self.saveWeapon()
             if graph := self.plottedWeapons.get(self.weaponSelector.currentText(), None):
+                # Don't do anything unless the plot has been added but not
+                # removed
                 if not graph.get_figure():
+                    # If the plot for the weapon has been hidden, unhide it!
                     self.chart.axes.add_artist(graph)
+                # Update the plot for this weapon based on the new inputs
                 graph.set_ydata([self.weapons[self.weaponSelector.currentText()].averageDamage(deadly) for deadly in range(50)])
                 self.chart.axes.legend()
                 self.chart.draw()
         else:
             if graph := self.plottedWeapons.get(self.weaponSelector.currentText(), None):
+                # Hide the current weapon's plot if inputs are not acceptable
+                # and the plot has been added but not removed
                 self.fig = graph.get_figure() # Need a better way to save self.fig
                 if graph.get_figure():
                     graph.remove()
@@ -108,11 +130,17 @@ class MainWindow(QMainWindow):
                     self.chart.draw()
 
     def onNewButtonClicked(self):
+        """
+        Loads a new weapon for editing
+        """
         self.weaponSelector.setCurrentText("New Weapon")
         for field in self.weaponInfoFields:
             field.clear()
 
     def onDeleteButtonClicked(self):
+        """
+        Deletes the current weapon and removes its graph if applicable
+        """
         if self.weaponSelector.currentText() != "New Weapon":
             del(self.weapons[self.weaponSelector.currentText()])
             self.removePlot()
@@ -121,18 +149,28 @@ class MainWindow(QMainWindow):
             self.weaponSelector.removeItem(self.weaponSelector.currentIndex())
 
     def saveWeapon(self):
+        """
+        Saves the current weapon in self.weapons and adds the current weapon to
+        the self.weaponSelector options if it is not already there
+        """
         weaponInfo = [self.weaponInfoFields[i].text() for i in range(5)]
         wName = weaponInfo[0]
         self.weapons[weaponInfo[0]] = Weapon(*weaponInfo)
 
         if self.weaponSelector.findText(wName) == -1:
+            # Make sure the weapon's name is in self.weaponSelector
             self.weaponSelector.addItem(wName)
         if not self.weaponSelector.currentText() in [wName, "New Weapon"]:
+            # If the name of the weapon has changed, remove references to the
+            # old name from self.weapons and self.weaponSelector
             del(self.weapons[self.weaponSelector.currentText()])
             self.weaponSelector.removeItem(self.weaponSelector.currentIndex())
         self.weaponSelector.setCurrentText(wName)
 
     def loadWeapon(self, name):
+        """
+        Loads the properties of a weapon into the input fields
+        """
         if name == "New Weapon":
             return self.onNewButtonClicked()
 
@@ -140,6 +178,9 @@ class MainWindow(QMainWindow):
             self.weaponInfoFields[field].setText(str(value))
 
     def plotWeapon(self):
+        """
+        Saves the current weapon and adds the plot to the graph
+        """
         self.saveWeapon()
         weapon = self.weapons[self.weaponSelector.currentText()]
         data = [range(50), [weapon.averageDamage(deadly) for deadly in range(50)]]
@@ -150,6 +191,9 @@ class MainWindow(QMainWindow):
         self.addPlotButton.setDisabled(True)
 
     def removePlot(self):
+        """
+        Removes the plot for the current weapon to the graph
+        """
         if plot := self.plottedWeapons.get(self.weaponSelector.currentText(), None):
             plot.remove()
             del(self.plottedWeapons[self.weaponSelector.currentText()])
@@ -159,15 +203,27 @@ class MainWindow(QMainWindow):
             self.addPlotButton.setEnabled(self.plotIsAddable())
 
     def plotIsRemovable(self):
+        """
+        Returns true if and only if the plot for the current weapon is toggled
+        on
+        """
         return bool(self.plottedWeapons.get(self.weaponSelector.currentText(), None))
 
     def plotIsAddable(self):
+        """
+        Returns true if and only if the plot for the current weapon is toggled
+        off AND all user inputs are acceptable
+        """
         if self.inputsAreAcceptable():
             return False if self.plotIsRemovable() else True
 
         return False
 
     def inputsAreAcceptable(self):
+        """
+        Returns true if and only if ALL user input fields have acceptable
+        inputs
+        """
         for field in self.weaponInfoFields:
             if not (field.hasAcceptableInput() and field.text()):
                 return False
