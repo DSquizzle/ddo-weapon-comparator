@@ -1,13 +1,17 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QGridLayout, QLineEdit, QPushButton, QLabel, QComboBox, QWidget, QTextEdit
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout,
+                             QHBoxLayout, QGridLayout, QLineEdit, QPushButton,
+                             QLabel, QComboBox, QWidget, QTextEdit)
+
 from PyQt5.QtCore import QRegularExpression
 from PyQt5.QtGui import QRegularExpressionValidator
 
 import matplotlib
-matplotlib.use("Qt5Agg")
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
 from weapon_comparator import Weapon
+matplotlib.use("Qt5Agg")
+
 
 class MplCanvas(FigureCanvasQTAgg):
     """
@@ -18,6 +22,7 @@ class MplCanvas(FigureCanvasQTAgg):
         fig = Figure()
         self.axes = fig.add_subplot(111)
         super().__init__(fig)
+
 
 class MainWindow(QMainWindow):
 
@@ -39,7 +44,6 @@ class MainWindow(QMainWindow):
         self.weaponSelector.addItem("New Weapon")
         self.weaponSelector.currentTextChanged.connect(self.loadWeapon)
         self.deleteButton = QPushButton("Delete")
-        #self.deleteButton.setDisabled(True)
         self.deleteButton.clicked.connect(self.onDeleteButtonClicked)
         self.newButton = QPushButton("New")
         self.newButton.clicked.connect(self.onNewButtonClicked)
@@ -62,7 +66,8 @@ class MainWindow(QMainWindow):
         for row, field in enumerate(self.fields):
             widget = QLineEdit(placeholderText=field[1])
             widget.textChanged.connect(self.onInputFieldChanged)
-            widget.setValidator(QRegularExpressionValidator(QRegularExpression(field[2])))
+            widget.setValidator(QRegularExpressionValidator(
+                                QRegularExpression(field[2])))
             self.weaponInfoFields.append(widget)
             grid.addWidget(QLabel(field[0]), row, 0)
             grid.addWidget(widget, row, 1)
@@ -109,21 +114,26 @@ class MainWindow(QMainWindow):
         if self.inputsAreAcceptable():
             # Auto-save the weapon any time all inputs pass the regex
             self.saveWeapon()
-            if graph := self.plottedWeapons.get(self.weaponSelector.currentText(), None):
+            if graph := self.plottedWeapons.get(  # noqa: E203, E701, E231
+               self.weaponSelector.currentText(), None):  # noqa: E203, E701, E231, E501
                 # Don't do anything unless the plot has been added but not
                 # removed
                 if not graph.get_figure():
                     # If the plot for the weapon has been hidden, unhide it!
                     self.chart.axes.add_artist(graph)
                 # Update the plot for this weapon based on the new inputs
-                graph.set_ydata([self.weapons[self.weaponSelector.currentText()].averageDamage(deadly) for deadly in range(50)])
+                graph.set_ydata([self.weapons[self.weaponSelector
+                                .currentText()].averageDamage(deadly)
+                                for deadly in range(50)])
                 self.chart.axes.legend()
                 self.chart.draw()
         else:
-            if graph := self.plottedWeapons.get(self.weaponSelector.currentText(), None):
+            if graph := self.plottedWeapons.get(self.weaponSelector  # noqa: E203, E701, E231, E501
+                                                .currentText(), None):  # noqa: E203, E701, E231, E501
                 # Hide the current weapon's plot if inputs are not acceptable
                 # and the plot has been added but not removed
-                self.fig = graph.get_figure() # Need a better way to save self.fig
+                self.fig = graph.get_figure()
+                # Need a better way to save self.fig
                 if graph.get_figure():
                     graph.remove()
                     self.chart.axes.legend()
@@ -144,8 +154,6 @@ class MainWindow(QMainWindow):
         if self.weaponSelector.currentText() != "New Weapon":
             del(self.weapons[self.weaponSelector.currentText()])
             self.removePlot()
-            #del(self.plottedWeapons[self.weaponSelector.currentText()])
-            # Above commented line is not necessary thanks to Python bindings
             self.weaponSelector.removeItem(self.weaponSelector.currentIndex())
 
     def saveWeapon(self):
@@ -183,8 +191,10 @@ class MainWindow(QMainWindow):
         """
         self.saveWeapon()
         weapon = self.weapons[self.weaponSelector.currentText()]
-        data = [range(50), [weapon.averageDamage(deadly) for deadly in range(50)]]
-        self.plottedWeapons[weapon.name] = self.chart.axes.plot(*data, label=weapon.name)[0]
+        data = [range(50), [weapon.averageDamage(deadly)
+                            for deadly in range(50)]]
+        self.plottedWeapons[weapon.name] = self.chart.axes.plot(
+                                           *data, label=weapon.name)[0]
         self.chart.axes.legend()
         self.chart.draw()
         self.removePlotButton.setEnabled(True)
@@ -194,7 +204,8 @@ class MainWindow(QMainWindow):
         """
         Removes the plot for the current weapon to the graph
         """
-        if plot := self.plottedWeapons.get(self.weaponSelector.currentText(), None):
+        if plot := self.plottedWeapons.get(self.weaponSelector.currentText(),  # noqa: E203, E701, E231, E501
+                                           None):  # noqa: E203, E701, E231
             plot.remove()
             del(self.plottedWeapons[self.weaponSelector.currentText()])
             self.chart.axes.legend()
@@ -207,7 +218,8 @@ class MainWindow(QMainWindow):
         Returns true if and only if the plot for the current weapon is toggled
         on
         """
-        return bool(self.plottedWeapons.get(self.weaponSelector.currentText(), None))
+        return bool(self.plottedWeapons.get(self.weaponSelector.currentText(),
+                                            None))
 
     def plotIsAddable(self):
         """
