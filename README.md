@@ -29,7 +29,7 @@ python gui.py
 * The legend breaks when the plot for a weapon is removed on account of invalid inputs and added back when valid inputs are entered
 * It is possible to add a plot for an existing weapon and change the name of the weapon rendering the original plot unremovable
 * The GUI layout can be very ugly when the window is maximized on large screens
-# Weapons can be loaded via autosave while users are editing input fields, interrupting the user's flow when typing inputs
+* Weapons can be loaded via autosave while users are editing input fields, interrupting users' flow when typing inputs
 
 ## Built With
 * [Matplotlib](https://matplotlib.org/)
