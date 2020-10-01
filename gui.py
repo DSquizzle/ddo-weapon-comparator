@@ -56,6 +56,7 @@ class MainWindow(QMainWindow):
         weaponSelectorLayout.setContentsMargins(20, 0, 0, 0)
 
         self.fields = [["Weapon Name", "e.g. Insanity", ".*"],
+                       ["Weapon Enhancement Bonus", "e.g. 5", "\\d+"],
                        ["Weapon Dice Multiplier", "e.g. 1", "\\d*(\\.\\d+)?"],
                        ["Base Damage Dice", "e.g. 2d6", "(?:(?:(?:\\d*d\\d+)|(?:\\d+(\\.\\d+)?|\\.\\d+))\\s*\\+\\s*)*(?:(?:\\d*d\\d+)|(?:\\d+(\\.\\d+)?|\\.\\d+))"],
                        ["Critical Profile", "e.g. 19-20x2", "[12]?\\d-20x\\d+"],
@@ -163,7 +164,7 @@ class MainWindow(QMainWindow):
         weapon to the self.weaponSelector options if it is not already
         there
         """
-        weaponInfo = [self.weaponInfoFields[i].text() for i in range(5)]
+        weaponInfo = [field.text() for field in self.weaponInfoFields]
         wName = weaponInfo[0]
         self.weapons[weaponInfo[0]] = Weapon(*weaponInfo)
 
