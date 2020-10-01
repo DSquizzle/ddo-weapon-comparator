@@ -11,10 +11,11 @@ class Weapon:
     """
     Represents a weapon
     """
-    def __init__(self, name, weaponDiceMultiplier,
+    def __init__(self, name, enhancementBonus, weaponDiceMultiplier,
                  baseDamageDice, critProfile, onHit):
 
         self.name = name
+        self.enhancementBonus = int(enhancementBonus)
         self.weaponDiceMultiplier = float(weaponDiceMultiplier)
         self.baseDamageDice = DamageExpression(baseDamageDice)
         self.critProfile = CritProfile(critProfile)
@@ -24,9 +25,10 @@ class Weapon:
         """
         Returns the average damage for the weapon
         """
-        return ((self.weaponDiceMultiplier * self.baseDamageDice
-                .averageDamage() + deadly) * (self.critProfile.effectiveHits()
-                / 19) + self.onHit.averageDamage())
+        return ((self.weaponDiceMultiplier *
+            self.baseDamageDice.averageDamage() + self.enhancementBonus +
+            deadly) * (self.critProfile.effectiveHits() / 19) +
+            self.onHit.averageDamage())
 
 
 class DamageExpression:
