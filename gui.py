@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout,
                              QHBoxLayout, QGridLayout, QLineEdit, QPushButton,
-                             QLabel, QComboBox, QWidget, QTextEdit)
+                             QLabel, QComboBox, QWidget)
 
 from PyQt5.QtCore import QRegularExpression
 from PyQt5.QtGui import QRegularExpressionValidator
@@ -127,8 +127,7 @@ class MainWindow(QMainWindow):
                 graph.set_ydata([self.weapons[self.weaponSelector
                                 .currentText()].averageDamage(deadly)
                                 for deadly in range(50)])
-                self.chart.axes.legend()
-                self.chart.draw()
+                self.drawPlot()
         else:
             if graph := self.plottedWeapons.get(self.weaponSelector  # noqa: E203, E701, E231, E501
                                                 .currentText(), None):  # noqa: E203, E701, E231, E501
@@ -138,8 +137,7 @@ class MainWindow(QMainWindow):
                 # Need a better way to save self.fig
                 if graph.get_figure():
                     graph.remove()
-                    self.chart.axes.legend()
-                    self.chart.draw()
+                    self.drawPlot()
 
     def onNewButtonClicked(self):
         """
@@ -204,8 +202,7 @@ class MainWindow(QMainWindow):
                             for deadly in range(50)]]
         self.plottedWeapons[weapon.name] = self.chart.axes.plot(
                                            *data, label=weapon.name)[0]
-        self.chart.axes.legend()
-        self.chart.draw()
+        self.drawPlot()
         self.removePlotButton.setEnabled(True)
         self.addPlotButton.setDisabled(True)
 
@@ -217,8 +214,7 @@ class MainWindow(QMainWindow):
                                            None):  # noqa: E203, E701, E231
             plot.remove()
             del(self.plottedWeapons[self.weaponSelector.currentText()])
-            self.chart.axes.legend()
-            self.chart.draw()
+            self.drawPlot()
             self.removePlotButton.setDisabled(True)
             self.addPlotButton.setEnabled(self.plotIsAddable())
 
@@ -250,6 +246,19 @@ class MainWindow(QMainWindow):
                 return False
 
         return True
+
+    def drawPlot(self):
+        """
+        Updates the graph and legendwith the most recent user inputs
+        """
+        # Grab all weapon names and their plots IF the plots should be
+        # visible so they can be added to the legend. If no plots
+        # should be visible, set labels and handles to be empty lists
+        labels, handles = (list(zip(*filter(lambda x: x[1].get_figure(),
+                                            self.plottedWeapons.items())))
+                           or [[], []])
+        self.chart.axes.legend(handles, labels)
+        self.chart.draw()
 
 
 app = QApplication([])
