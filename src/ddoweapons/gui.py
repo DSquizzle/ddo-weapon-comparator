@@ -10,7 +10,7 @@ import matplotlib
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
-from weapon_comparator import Weapon
+from ddoweapons.weapon_comparator import Weapon
 matplotlib.use("Qt5Agg")
 
 
