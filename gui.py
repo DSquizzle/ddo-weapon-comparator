@@ -1,3 +1,4 @@
+import sys
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout,
                              QHBoxLayout, QGridLayout, QLineEdit, QPushButton,
                              QLabel, QComboBox, QWidget)
@@ -261,7 +262,11 @@ class MainWindow(QMainWindow):
         self.chart.draw()
 
 
-app = QApplication([])
-window = MainWindow()
-window.show()
-app.exec_()
+def main(*args):
+    app = QApplication([])
+    window = MainWindow()
+    window.show()
+    app.exec_()
+
+if __name__ == '__main__':
+    main(*sys.argv[1:])
