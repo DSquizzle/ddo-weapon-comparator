@@ -11,6 +11,6 @@ setup(
         'pyqt5',
         ],
     entry_points = {
-        'console_scripts': ['ddo=gui']
+        'console_scripts': ['ddoweapons=gui:main']
         }
     )
