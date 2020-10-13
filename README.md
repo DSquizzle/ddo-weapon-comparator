@@ -44,8 +44,6 @@ Make sure you have the prerequisites installed. As for all Python projects, it i
 python3 -m venv ddoweapons
 source ddoweapons/bin/activate
 pip install --upgrade pip
-pip install matplotlib
-pip install pyqt5
 ```
 You are now ready to clone the repository
 ```
