@@ -7,6 +7,38 @@ For a given weapon, most of the variables in the calculations above can be expec
 At this moment, DDO Weapon Comparator does not take into account a character's melee/ranged power, which may have a significant impact on weapon superiority. This will be fixed in a future patch. Furthermore, dps comparisons are made in terms of damage per strike, not damage per second, so differences in attack speed/doublestrike/doubleshot from weapon to weapon are ignored, and damage per second calculations between different combat styles (e.g. THF vs Inquisitive) are not possible.
 
 ## Getting Started
+### As a User
+If you aren't interested in developing the project, you can simply install it with pip. Do note that you'll need to have Python version 3.8.0 or higher, and you may need to upgrade your pip installation before installing the project. Since this project is an application and not a library, a global installation may actually be preferable to an isolated (virtual environment) installation, but if you find that you need elevated privileges to install the application, then a virtual environment is still recommended.
+<details><summary>How to create and enter a virtual environment</summary>
+
+<details><summary>On Linux</summary>
+
+```
+python3.8 -m venv ddoweapons
+source ddoweapons/bin/activate
+```
+</details>
+
+<details><summary>On Windows</summary>
+
+```
+python -m venv ddoweapons
+ddoweapons\scripts\activate
+```
+</details>
+
+</details>
+
+To install the application, just run
+```
+pip install --upgrade pip
+pip install https://github.com/DSquizzle/ddo-weapon-comparator/archive/users.zip
+```
+Once the project has been installed, you can run it from the command line. If the application was installed in a virtual environment, then the virtual environment must be active for the command to work.
+```
+ddoweapons
+```
+### As a Developer
 Make sure you have the prerequisites installed. As for all Python projects, it is recommended that you work inside of a virtual environment. If you aren't familiar with virtual environments, [read up!](https://realpython.com/python-virtual-environments-a-primer/)
 ```
 python3 -m venv ddoweapons
@@ -20,9 +52,10 @@ You are now ready to clone the repository
 git clone https://github.com/DSquizzle/ddo-weapon-comparator
 cd ddo-weapon-comparator
 ```
-Finally, you can run the application
+Finally, you can install and run the application
 ```
-python gui.py
+pip install -e .
+ddoweapons
 ```
 
 ## Known Bugs
