@@ -1,3 +1,4 @@
+import sys
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout,
                              QHBoxLayout, QGridLayout, QLineEdit, QPushButton,
                              QLabel, QComboBox, QWidget)
@@ -9,7 +10,7 @@ import matplotlib
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
-from weapon_comparator import Weapon
+from ddoweapons.weapon_comparator import Weapon
 matplotlib.use("Qt5Agg")
 
 
@@ -261,7 +262,11 @@ class MainWindow(QMainWindow):
         self.chart.draw()
 
 
-app = QApplication([])
-window = MainWindow()
-window.show()
-app.exec_()
+def main(*args):
+    app = QApplication([])
+    window = MainWindow()
+    window.show()
+    app.exec_()
+
+if __name__ == '__main__':
+    main(*sys.argv[1:])
